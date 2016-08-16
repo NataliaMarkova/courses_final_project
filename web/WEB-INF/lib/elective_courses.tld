@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+
+    <tlib-version>1.0</tlib-version>
+    <short-name>elc</short-name>
+    <uri>elective_courses</uri>
+
+    <tag>
+        <name>h2</name>
+        <tag-class>ua.natalia_markova.project4.tags.H2Tag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>courseTitle</name>
+        <tag-class>ua.natalia_markova.project4.tags.CoursesTitleTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>type</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>admin</name>
+        <tag-class>ua.natalia_markova.project4.tags.AdminTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <name>student</name>
+        <tag-class>ua.natalia_markova.project4.tags.StudentTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <name>professor</name>
+        <tag-class>ua.natalia_markova.project4.tags.ProfessorTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <name>anonymous</name>
+        <tag-class>ua.natalia_markova.project4.tags.AnonymousTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <name>CSRFToken</name>
+        <tag-class>ua.natalia_markova.project4.tags.CSRFTokenTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+</taglib>

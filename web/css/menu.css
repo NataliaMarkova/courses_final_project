@@ -1,0 +1,168 @@
+#main-menu, #main-menu ul, #main-menu li {
+    margin: 0;
+    padding: 0;
+    font-family: 'Muli', sans-serif;
+}
+#main-menu, #main-menu ul {
+    background: rgb(46,95,122);
+}
+#main-menu { /* подменю перемещается относительно меню */
+    position: relative;
+    display: table;
+    width: 100%;
+}
+#main-menu ul { /* подменю находится вне потока */
+    position: absolute;
+    z-index: 5;
+    display: none;
+}
+#main-menu li:hover ul { /* подменю будет показано, если курсор наведён на пункт меню с выпадающем списком */
+    display: block;
+}
+#main-menu li {
+    display: inline-block;
+    text-align: center;
+}
+#main-menu ul li {
+    display: block;
+    text-align: left;
+}
+#main-menu .right { /* последнее подменю будет расширяться справа налево */
+    direction: rtl;
+}
+#main-menu .right ul { /* для IE, решение найдено случайно, где связь ??? */
+    right: 0;
+}
+#main-menu .right li { /* последнее подменю будет расширяться справа налево, но не пункты последнего подменю */
+    direction: ltr;
+}
+#main-menu a {
+    display: block;
+    padding: 10px 14px 10px 14px;
+    color: #fff;
+    text-decoration: none;
+}
+#main-menu ul a {
+    padding: 3px 15px;
+}
+#main-menu li:hover {
+    background: rgb(96,145,172);
+}
+
+h2 {
+    margin: 1em 0 0.5em 0;
+    font-weight: normal;
+    position: relative;
+    text-shadow: 0 -1px rgba(0,0,0,0.6);
+    font-size: 28px;
+    line-height: 40px;
+    background: #355681;
+    background: rgba(53,86,129, 0.8);
+    border: 1px solid #fff;
+    padding: 5px 15px;
+    color: white;
+    border-radius: 0 10px 0 10px;
+    box-shadow: inset 0 0 5px rgba(53,86,129, 0.5);
+    font-family: 'Muli', sans-serif;
+}
+
+h3 {
+    margin: 1em 0 0.5em 0;
+    font-weight: 600;
+    font-family: 'Titillium Web', sans-serif;
+    position: relative;
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.4);
+    font-size: 14px;
+    line-height: 30px;
+    color: #355681;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(53,86,129, 0.3);
+    text-align: center;
+}
+
+div.main {
+    width: 80%;
+    background-color: aliceblue;
+    height: 100%;
+    border: thin;
+    margin: auto;
+    vertical-align: middle;
+    font-family: 'Muli', sans-serif;
+}
+
+div.lang {
+    width: 80%;
+    background-color: white;
+    height: 30px;
+    border: thin;
+    margin: auto;
+    vertical-align: middle;
+    font-family: 'Muli', sans-serif;
+}
+
+input.field {
+    width: 60px;
+    font-family: 'Muli', sans-serif;
+}
+
+input.dataField {
+    width: 300px;
+    font-family: 'Muli', sans-serif;
+}
+
+input.smallDataField {
+    width: 50px;
+    font-family: 'Muli', sans-serif;
+}
+
+
+select.selectField {
+    width: 300px;
+    font-family: 'Muli', sans-serif;
+}
+
+#message {
+    font-size:12px;
+    font-family: 'Titillium Web', sans-serif;
+}
+
+.error {
+    font-size:12px;
+    font-family: 'Titillium Web', sans-serif;
+    color: red;
+}
+
+.myButton {
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #7892c2), color-stop(1, #476e9e));
+    background:-moz-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+    background:-webkit-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+    background:-o-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+    background:-ms-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+    background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#7892c2', endColorstr='#476e9e',GradientType=0);
+    background-color:#7892c2;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    border-radius:4px;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family: 'Muli', sans-serif;
+    font-size:14px;
+    padding:4px 19px;
+    text-decoration:none;
+}
+.myButton:hover {
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #476e9e), color-stop(1, #7892c2));
+    background:-moz-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+    background:-webkit-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+    background:-o-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+    background:-ms-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+    background:linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#476e9e', endColorstr='#7892c2',GradientType=0);
+    background-color:#476e9e;
+}
+.myButton:active {
+    position:relative;
+    top:1px;
+}

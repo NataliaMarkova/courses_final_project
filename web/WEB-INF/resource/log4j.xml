@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+<log4j:configuration>
+
+    <appender name="default.console" class="org.apache.log4j.ConsoleAppender">
+        <param name="target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] - %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="default.file" class="org.apache.log4j.FileAppender">
+        <param name="file" value="${rootPath}/log/elective_courses.log" />
+        <param name="threshold" value="error" />
+        <param name="append" value="true"/>
+        <param name="immediateFlush" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] - %m%n" />
+        </layout>
+    </appender>
+
+    <root>
+        <priority value="debug" />
+        <appender-ref ref="default.console" />
+        <appender-ref ref="default.file" />
+    </root>
+
+</log4j:configuration>
