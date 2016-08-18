@@ -19,30 +19,13 @@ import java.util.ResourceBundle;
 /**
  * Created by natalia_markova on 17.07.2016.
  */
-public class CoursesController implements RequestHandler {
+public class CoursesController implements Controller {
 
     private static final Logger logger = Logger.getLogger(CoursesController.class);
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("resource.requestURI");
     private CourseService courseService;
 
     public CoursesController(@NotNull CourseService courseService) {
         this.courseService = courseService;
-    }
-
-    /**
-     * @throws WrongRequestURIException
-     * {@inheritDoc}
-     */
-    @Override
-    public String handleRequest(RequestWrapper request, String requestURI) throws WrongRequestURIException {
-        if (requestURI.equals(bundle.getString("courses"))) {
-            return viewCourses(request);
-        } else if (requestURI.equals(bundle.getString("course_information"))) {
-            return viewCourseInformation(request);
-        } else {
-            logger.error("Wrong request URI: " + requestURI);
-            throw new WrongRequestURIException();
-        }
     }
 
     /**
@@ -51,6 +34,7 @@ public class CoursesController implements RequestHandler {
      * @param request RequestWrapper object
      * @return name of the jsp-page
      */
+    @RequestHandler(value = "/courses")
     public String viewCourses(RequestWrapper request) {
         logger.debug("viewCourses()");
         SessionWrapper session = request.getSession(true);
@@ -74,6 +58,7 @@ public class CoursesController implements RequestHandler {
      * @param request RequestWrapper object
      * @return name of jsp-page
      */
+    @RequestHandler(value = "/course_information")
     public String viewCourseInformation(RequestWrapper request) {
         logger.debug("viewCourseInformation()");
         SessionWrapper session = request.getSession(true);

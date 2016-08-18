@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 /**
  * Created by natalia_markova on 29.06.2016.
  */
-public class UserController implements RequestHandler {
+public class UserController implements Controller {
 
     private static final Logger logger = Logger.getLogger(UserController.class);
     private static final ResourceBundle bundle = ResourceBundle.getBundle("resource.requestURI");
@@ -40,42 +40,13 @@ public class UserController implements RequestHandler {
     }
 
     /**
-     * @throws WrongRequestURIException
-     * {@inheritDoc}
-     */
-    @Override
-    public String handleRequest(RequestWrapper request, String requestURI) throws WrongRequestURIException {
-        if (requestURI.equals(bundle.getString("index"))) {
-            return getStartPage(request);
-        } else if (requestURI.equals(bundle.getString("authenticate"))) {
-            return authenticate(request);
-        } else if (requestURI.equals(bundle.getString("logout"))) {
-            return logOut(request);
-        } else if (requestURI.equals(bundle.getString("edit_user"))) {
-            return editUserPersonalData(request);
-        } else if (requestURI.equals(bundle.getString("change_password"))) {
-            return changePassword(request);
-        } else if (requestURI.equals(bundle.getString("registration"))) {
-            return getRegistrationPage(request);
-        } else if (requestURI.equals(bundle.getString("register"))) {
-            return registerUser(request);
-        } else if (requestURI.equals(bundle.getString("do_edit_user"))) {
-            return updateUserPersonalData(request);
-        } else if (requestURI.equals(bundle.getString("do_change_password"))) {
-            return changeUserPassword(request);
-        } else {
-            logger.error("Wrong request URI: " + requestURI);
-            throw new WrongRequestURIException();
-        }
-    }
-
-    /**
      * If user is logged in returns the name of the user's main page depending on user type,
      * otherwise - the name of the start page with log in and registration
      * @param request RequestWrapper object
      * @return name of the jsp-page
      */
-    private String getStartPage(RequestWrapper request) {
+    @RequestHandler(value = "/")
+    public String getStartPage(RequestWrapper request) {
         logger.debug("getStartPage()");
         SessionWrapper session = request.getSession(true);
         Locale locale = (Locale) session.getAttribute("locale");
@@ -91,7 +62,8 @@ public class UserController implements RequestHandler {
      *  @param request RequestWrapper object
      *  @return name of the jsp-page
      */
-    private String authenticate(RequestWrapper request) {
+    @RequestHandler(value = "/authenticate")
+    public String authenticate(RequestWrapper request) {
         logger.debug("authenticate()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
@@ -125,7 +97,8 @@ public class UserController implements RequestHandler {
      *  @param request RequestWrapper object
      *  @return name of the start log in and registration page
      */
-    private String logOut(RequestWrapper request) {
+    @RequestHandler(value = "/logout")
+    public String logOut(RequestWrapper request) {
         logger.debug("logOut()");
         SessionWrapper session = request.getSession(true);
         session.invalidate();
@@ -150,7 +123,8 @@ public class UserController implements RequestHandler {
      *  @param request RequestWrapper object
      *  @return name of the jsp page or URI to the start page
      */
-    private String getRegistrationPage(RequestWrapper request) {
+    @RequestHandler(value = "/registration")
+    public String getRegistrationPage(RequestWrapper request) {
         logger.debug("getRegistrationPage()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
@@ -173,7 +147,8 @@ public class UserController implements RequestHandler {
      *  @param request RequestWrapper object
      *  @return name of the Registration page
      */
-    private String registerUser(RequestWrapper request) {
+    @RequestHandler(value = "/register")
+    public String registerUser(RequestWrapper request) {
         logger.debug("registerUser()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
@@ -224,7 +199,8 @@ public class UserController implements RequestHandler {
      *  @param request RequestWrapper object
      *  @return the name of the page to edit personal data
      */
-    private String editUserPersonalData(RequestWrapper request) {
+    @RequestHandler(value = "/edit_user")
+    public String editUserPersonalData(RequestWrapper request) {
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
         request.setAttribute("name", user.getName());
@@ -240,7 +216,8 @@ public class UserController implements RequestHandler {
      *  @param request RequestWrapper object
      *  @return the name of the page to change password
      */
-    private String changePassword(RequestWrapper request) {
+    @RequestHandler(value = "/change_password")
+    public String changePassword(RequestWrapper request) {
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
         request.setAttribute("main_page", MainServlet.getUserRedirectPage(user));
@@ -254,7 +231,8 @@ public class UserController implements RequestHandler {
      *  @return the name of the user page with personal data in case operation's successful,
      *          otherwise - the name of the page where user can correct his data
      */
-    private String updateUserPersonalData(RequestWrapper request) {
+    @RequestHandler(value = "/do_edit_user")
+    public String updateUserPersonalData(RequestWrapper request) {
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
         request.setAttribute("main_page", MainServlet.getUserRedirectPage(user));
@@ -287,7 +265,8 @@ public class UserController implements RequestHandler {
      *  @return the name of the user page with personal data in case operation's successful,
      *          otherwise - the name of the page where user can try to change his password one more time
      */
-    private String changeUserPassword(RequestWrapper request) {
+    @RequestHandler(value = "/do_change_password")
+    public String changeUserPassword(RequestWrapper request) {
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
         request.setAttribute("main_page", MainServlet.getUserRedirectPage(user));
@@ -309,5 +288,4 @@ public class UserController implements RequestHandler {
         }
         return "user_page";
     }
-
 }

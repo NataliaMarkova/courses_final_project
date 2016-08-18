@@ -6,7 +6,6 @@ import ua.natalia_markova.project4.domain.Course;
 import ua.natalia_markova.project4.domain.Department;
 import ua.natalia_markova.project4.exceptions.WrongCourseDataException;
 import ua.natalia_markova.project4.exceptions.WrongDepartmentDataException;
-import ua.natalia_markova.project4.exceptions.WrongRequestURIException;
 import ua.natalia_markova.project4.service.AdminService;
 import ua.natalia_markova.project4.wrappers.RequestWrapper;
 
@@ -16,7 +15,7 @@ import java.util.ResourceBundle;
 /**
  * Created by natalia_markova on 17.07.2016.
  */
-public class AdminController implements RequestHandler {
+public class AdminController implements Controller {
 
     private static final Logger logger = Logger.getLogger(AdminController.class);
     private static final ResourceBundle bundle = ResourceBundle.getBundle("resource.requestURI");
@@ -28,36 +27,12 @@ public class AdminController implements RequestHandler {
     }
 
     /**
-     * @throws WrongRequestURIException {@inheritDoc}
-     */
-    @Override
-    public String handleRequest(RequestWrapper request, String requestURI) throws WrongRequestURIException {
-        if (requestURI.equals(bundle.getString("users"))) {
-            return viewUsers(request);
-        } else if (requestURI.equals(bundle.getString("departments"))) {
-            return viewDepartments(request);
-        } else if (requestURI.equals(bundle.getString("new_department"))) {
-            return editDepartment(request, true);
-        } else if (requestURI.equals(bundle.getString("edit_department"))) {
-            return editDepartment(request, false);
-        } else if (requestURI.equals(bundle.getString("update_department"))) {
-            return updateDepartment(request);
-        } else if (requestURI.equals(bundle.getString("new_course"))) {
-            return newCourse(request);
-        } else if (requestURI.equals(bundle.getString("add_course"))) {
-            return addCourse(request);
-        }else {
-            logger.error("Wrong request URI: " + requestURI);
-            throw new WrongRequestURIException();
-        }
-    }
-
-    /**
      * Gets the list of all users from the database and puts it in the request
      * @param request
      * @return name of the Users' list jsp-page
      */
-    private String viewUsers(RequestWrapper request) {
+    @RequestHandler(value = "/users")
+    public String viewUsers(RequestWrapper request) {
         logger.debug("viewUsers(): ");
         request.setAttribute("users", adminService.getUsers());
         return "users";
@@ -68,7 +43,8 @@ public class AdminController implements RequestHandler {
      * @param request
      * @return name of the Departments' list jsp-page
      */
-    private String viewDepartments(RequestWrapper request) {
+    @RequestHandler(value = "/departments")
+    public String viewDepartments(RequestWrapper request) {
         logger.debug("viewDepartments(): ");
         request.setAttribute("departments", adminService.getDepartments());
         return "departments";
@@ -77,11 +53,33 @@ public class AdminController implements RequestHandler {
     /**
      *  Puts the Department object that is going to be edited in the request
      *  @param request
-     *  @param isNew true value means editing new department, false - editing existing department
      *  @return name of the Department's edit page
      */
-    private String editDepartment(RequestWrapper request, boolean isNew) {
+    @RequestHandler(value = "/new_department")
+    public String newDepartment(RequestWrapper request) {
+        logger.debug("newDepartment(): ");
+        return editNewOrExistingDepartment(request, true);
+    }
+
+    /**
+     *  Puts the Department object that is going to be edited in the request
+     *  @param request
+     *  @return name of the Department's edit page
+     */
+    @RequestHandler(value = "/edit_department")
+    public String editDepartment(RequestWrapper request) {
         logger.debug("editDepartment(): ");
+        return editNewOrExistingDepartment(request, false);
+    }
+
+    /**
+     *  Puts the Department object that is going to be edited in the request
+     *  @param request
+     *  @param isNew indicates if it is a new department to be edites or an existing one
+     *  @return name of the Department's edit page
+     */
+    private String editNewOrExistingDepartment(RequestWrapper request, boolean isNew) {
+        logger.debug("editNewOrExistingDepartment(): ");
         Department department;
         if (isNew) {
             department = new Department("");
@@ -107,7 +105,8 @@ public class AdminController implements RequestHandler {
      *  @param request
      *  @return name of the Department's edit page or URI to the Departments' list page
      */
-    private String updateDepartment(RequestWrapper request) {
+    @RequestHandler(value = "/update_department")
+    public String updateDepartment(RequestWrapper request) {
         logger.debug("updateDepartment(): ");
         String departmentName = request.getParameter("department_name");
         Department department = new Department(departmentName);
@@ -137,7 +136,8 @@ public class AdminController implements RequestHandler {
      *  @param request
      *  @return name of the Course's edit page
      */
-    private String newCourse(RequestWrapper request) {
+    @RequestHandler(value = "/new_course")
+    public String newCourse(RequestWrapper request) {
         logger.debug("newCourse(): ");
         request.setAttribute("course", new Course("", new Date(), new Date()));
         request.setAttribute("professors", adminService.getProfessors());
@@ -151,7 +151,8 @@ public class AdminController implements RequestHandler {
      *  @param request
      *  @return name of the Course's edit page or URI to the Courses' list page
      */
-    private String addCourse(RequestWrapper request) {
+    @RequestHandler(value = "/add_course")
+    public String addCourse(RequestWrapper request) {
         logger.debug("addCourse()");
         String courseName = request.getParameter("course_name");
         String start_date = request.getParameter("start_date");

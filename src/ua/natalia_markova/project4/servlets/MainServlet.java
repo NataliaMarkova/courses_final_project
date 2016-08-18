@@ -1,7 +1,7 @@
 package ua.natalia_markova.project4.servlets;
 
 import org.apache.log4j.Logger;
-import ua.natalia_markova.project4.controllers.RequestHandler;
+import ua.natalia_markova.project4.controllers.ControllerManager;
 import ua.natalia_markova.project4.wrappers.RequestWrapper;
 import ua.natalia_markova.project4.wrappers.RequestWrapperImpl;
 import ua.natalia_markova.project4.wrappers.SessionWrapper;
@@ -10,7 +10,6 @@ import ua.natalia_markova.project4.enums.DaoType;
 import ua.natalia_markova.project4.enums.ServiceType;
 import ua.natalia_markova.project4.enums.UserType;
 import ua.natalia_markova.project4.exceptions.WrongRequestURIException;
-import ua.natalia_markova.project4.factories.ControllerFactory;
 import ua.natalia_markova.project4.factories.DaoFactory;
 import ua.natalia_markova.project4.factories.ServiceFactory;
 
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ResourceBundle;
 
 /**
@@ -29,7 +29,7 @@ public class MainServlet extends HttpServlet {
 
     private static final Logger logger = Logger.getLogger(MainServlet.class);
     private ResourceBundle servletProperties = ResourceBundle.getBundle("resource.servlet_config");
-    private ControllerFactory controllerFactory;
+    private ControllerManager controllerManager;
 
     @Override
     public void init() throws ServletException {
@@ -61,8 +61,8 @@ public class MainServlet extends HttpServlet {
      * @param response HttpServletResponse object
      */
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (controllerFactory == null) {
-            initializeControllerFactory();
+        if (controllerManager == null) {
+            initializeControllerManager();
         }
         String responseString = getResponseString(request);
         logger.debug("Response string: " + responseString);
@@ -103,36 +103,37 @@ public class MainServlet extends HttpServlet {
             return "/";
         }
         String requestString = request.getPathInfo();
-        RequestHandler handler = controllerFactory.getRequestHandler(requestString);
-
-        if (handler == null) {
-            request.setAttribute("resource_uri", requestString);
-            return "error404";
-        }
-
         request.setAttribute("command_name", requestString); // for localization filter to redirect
         logger.debug("Request command_name: " + requestString);
 
-        RequestWrapper wrapper = new RequestWrapperImpl(request);
         String responseString;
         try {
-            responseString = handler.handleRequest(wrapper, requestString);
+            responseString = controllerManager.manageRequest(new RequestWrapperImpl(request), requestString);
         } catch (WrongRequestURIException e) {
             logger.error(e.getMessage());
             request.setAttribute("resource_uri", requestString);
             return "error404";
+        } catch (IllegalAccessException e) {
+            logger.error(e.getMessage());
+            request.setAttribute("message", "Internal error");
+            return "exception";
+
+        } catch (InvocationTargetException e) {
+            logger.error(e.getMessage());
+            request.setAttribute("message", "Internal error");
+            return "exception";
         }
         return responseString;
     }
 
     /**
-     * Initializes DaoFactory, ServiceFactory and after all ControllerFactory that is used to handle all income requests
+     * Initializes DaoFactory, ServiceFactory and after all ControllerManager that is used to handle all income requests
      * @return void
      */
-    private void initializeControllerFactory() {
+    private void initializeControllerManager() {
         DaoFactory daoFactory = DaoFactory.getFactory(DaoType.JDBC);
         ServiceFactory serviceFactory = ServiceFactory.getFactory(daoFactory, ServiceType.SIMPLE);
-        controllerFactory = ControllerFactory.getControllerFactory(serviceFactory);
+        controllerManager = ControllerManager.getControllerManager(serviceFactory);
     }
 
 

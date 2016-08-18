@@ -8,12 +8,12 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import ua.natalia_markova.project4.controllers.RequestHandler;
+import ua.natalia_markova.project4.controllers.Controller;
 import ua.natalia_markova.project4.domain.Department;
 import ua.natalia_markova.project4.domain.Professor;
 import ua.natalia_markova.project4.enums.ServiceType;
 import ua.natalia_markova.project4.exceptions.WrongRequestURIException;
-import ua.natalia_markova.project4.factories.ControllerFactory;
+import ua.natalia_markova.project4.controllers.ControllerManager;
 import ua.natalia_markova.project4.factories.ServiceFactory;
 import ua.natalia_markova.project4.service.AdminService;
 import utils.TestRequestWrapper;
@@ -22,6 +22,7 @@ import utils.TestUtil;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -32,7 +33,7 @@ import java.util.ResourceBundle;
 @RunWith(Theories.class)
 public class AdminControllerTest {
 
-    private static ControllerFactory controllerFactory;
+    private static ControllerManager controllerManager;
     private static ResourceBundle bundle;
     private static ServiceFactory serviceFactory;
 
@@ -40,43 +41,39 @@ public class AdminControllerTest {
     public static void init() throws NamingException {
         bundle = ResourceBundle.getBundle("resource.requestURI");
         serviceFactory = TestUtil.getServiceFactory(ServiceType.SIMPLE);
-        controllerFactory = ControllerFactory.getControllerFactory(serviceFactory);
+        controllerManager = ControllerManager.getControllerManager(serviceFactory);
     }
 
     @Test
-    public void adminControllerViewUsersTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerViewUsersTestOK() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         String requestURI = bundle.getString("users");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("users"));
     }
 
     @Test
-    public void adminControllerViewDepartmentsTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerViewDepartmentsTestOK() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         String requestURI = bundle.getString("departments");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("departments"));
     }
 
     @Test
-    public void adminControllerNewDepartmentTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerNewDepartmentTestOK()throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         String requestURI = bundle.getString("new_department");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("department"));
     }
 
     @Test
-    public void adminControllerEditDepartmentTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerEditDepartmentTestOK() throws  WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("department_id", "1");
         String requestURI = bundle.getString("edit_department");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("department"));
     }
 
@@ -87,66 +84,61 @@ public class AdminControllerTest {
     }
 
     @Theory
-    public void adminControllerEditDepartmentTestException(final String id) throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerEditDepartmentTestException(final String id) throws  WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("department_id", id);
         String requestURI = bundle.getString("edit_department");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("exception"));
     }
 
     @Test
-    public void adminControllerUpdateDepartmentTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerUpdateDepartmentTestOK() throws  WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         AdminService service = serviceFactory.getAdminService();
         Department department = service.getDepartment(1L);
         request.setParameter("department_id", department.getId().toString());
         request.setParameter("department_name", department.getName());
         String requestURI = bundle.getString("update_department");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("/departments"));
     }
 
     @Test
-    public void adminControllerUpdateDepartmentTestInternalError() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerUpdateDepartmentTestInternalError() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("department_id", "-1");
         request.setParameter("department_name", "fkgjfkghkf");
         String requestURI = bundle.getString("update_department");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         String error = (String) request.getAttribute("error");
         Assert.assertTrue(response.equals("/departments"));
         Assert.assertNotNull(error);
     }
 
     @Test
-    public void adminControllerUpdateDepartmentTestWrongDepartmentDataException() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerUpdateDepartmentTestWrongDepartmentDataException() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException{
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("department_id", "");
         request.setParameter("department_name", "");
         String requestURI = bundle.getString("update_department");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         String error = (String) request.getAttribute("error");
         Assert.assertTrue(response.equals("department"));
         Assert.assertNotNull(error);
     }
 
     @Test
-    public void adminControllerNewCourseTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerNewCourseTestOK() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         String requestURI = bundle.getString("new_course");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("course"));
     }
 
     @Ignore
     @Test
-    public void adminControllerAddCourseTestOK() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerAddCourseTestOK() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         AdminService service = serviceFactory.getAdminService();
         List<Department> departments = service.getDepartments();
@@ -161,14 +153,12 @@ public class AdminControllerTest {
         request.setParameter("professor_id", professors.get(0).getId().toString());
         request.setParameter("department_id", departments.get(0).getId().toString());
         String requestURI = bundle.getString("add_course");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("/courses"));
-
     }
 
     @Test
-    public void adminControllerAddCourseTestWrondIds() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerAddCourseTestWrondIds() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("course_name", "ddkjfhkdhg");
         request.setParameter("start_date", "2017-02-28");
@@ -176,15 +166,14 @@ public class AdminControllerTest {
         request.setParameter("professor_id", "-1");
         request.setParameter("department_id", "-1");
         String requestURI = bundle.getString("add_course");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("course"));
         String error = (String) request.getAttribute("error");
         Assert.assertNotNull(error);
     }
 
     @Test
-    public void adminControllerAddCourseTestCourseNameIsEmpty() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerAddCourseTestCourseNameIsEmpty() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("course_name", "");
         request.setParameter("start_date", "2017-02-28");
@@ -192,15 +181,14 @@ public class AdminControllerTest {
         request.setParameter("professor_id", "12");
         request.setParameter("department_id", "1");
         String requestURI = bundle.getString("add_course");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("course"));
         String error = (String) request.getAttribute("error");
         Assert.assertNotNull(error);
     }
 
     @Test
-    public void adminControllerAddCourseTestStartDateIsEmpty() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerAddCourseTestStartDateIsEmpty() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("course_name", "fdgfdgfdg");
         request.setParameter("start_date", "");
@@ -208,15 +196,14 @@ public class AdminControllerTest {
         request.setParameter("professor_id", "12");
         request.setParameter("department_id", "1");
         String requestURI = bundle.getString("add_course");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("course"));
         String error = (String) request.getAttribute("error");
         Assert.assertNotNull(error);
     }
 
     @Test
-    public void adminControllerAddCourseTestEndDateIsEmpty() throws ServletException, WrongRequestURIException, IOException {
+    public void adminControllerAddCourseTestEndDateIsEmpty() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         request.setParameter("course_name", "fdgfdgfdg");
         request.setParameter("start_date", "2017-03-31");
@@ -224,8 +211,7 @@ public class AdminControllerTest {
         request.setParameter("professor_id", "12");
         request.setParameter("department_id", "1");
         String requestURI = bundle.getString("add_course");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
-        String response = handler.handleRequest(request, requestURI);
+        String response = controllerManager.manageRequest(request, requestURI);
         Assert.assertTrue(response.equals("course"));
         String error = (String) request.getAttribute("error");
         Assert.assertNotNull(error);

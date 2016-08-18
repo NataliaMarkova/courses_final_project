@@ -1,18 +1,15 @@
 package ua.natalia_markova.project4.controllers;
 
-import ua.natalia_markova.project4.wrappers.RequestWrapper;
-import ua.natalia_markova.project4.exceptions.WrongRequestURIException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Created by natalia_markova on 23.07.2016.
+ * Created by natalia_markova on 18.08.2016.
  */
-public interface RequestHandler {
-    /**
-     * Handles request that came from the client depending on request URI
-     * @throws WrongRequestURIException if no method found to proceed the request URI
-     * @param request RequestWrapper object
-     * @param requestURI request path
-     * @return the name of jsp-page or request URI
-     */
-    String handleRequest(RequestWrapper request, String requestURI) throws WrongRequestURIException;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface RequestHandler {
+    String value();
 }

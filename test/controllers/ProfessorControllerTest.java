@@ -3,25 +3,22 @@ package controllers;
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ua.natalia_markova.project4.controllers.RequestHandler;
 import ua.natalia_markova.project4.domain.ArchiveItem;
 import ua.natalia_markova.project4.domain.Course;
 import ua.natalia_markova.project4.domain.Professor;
 import ua.natalia_markova.project4.enums.CourseType;
 import ua.natalia_markova.project4.enums.ServiceType;
 import ua.natalia_markova.project4.exceptions.WrongRequestURIException;
-import ua.natalia_markova.project4.factories.ControllerFactory;
+import ua.natalia_markova.project4.controllers.ControllerManager;
 import ua.natalia_markova.project4.factories.ServiceFactory;
 import ua.natalia_markova.project4.service.AdminService;
 import ua.natalia_markova.project4.service.CourseService;
-import ua.natalia_markova.project4.service.ProfessorService;
 import utils.TestRequestWrapper;
 import utils.TestSessionWrapper;
 import utils.TestUtil;
 
 import javax.naming.NamingException;
-import javax.servlet.ServletException;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,7 +27,7 @@ import java.util.ResourceBundle;
  */
 public class ProfessorControllerTest {
 
-    private static ControllerFactory controllerFactory;
+    private static ControllerManager controllerManager;
     private static ResourceBundle bundle;
     private static ServiceFactory serviceFactory;
 
@@ -38,16 +35,15 @@ public class ProfessorControllerTest {
     public static void init() throws NamingException {
         bundle = ResourceBundle.getBundle("resource.requestURI");
         serviceFactory = TestUtil.getServiceFactory(ServiceType.SIMPLE);
-        controllerFactory = ControllerFactory.getControllerFactory(serviceFactory);
+        controllerManager = ControllerManager.getControllerManager(serviceFactory);
     }
 
     @Test
-    public void putMarkTest() throws ServletException, WrongRequestURIException, IOException {
+    public void putMarkTest() throws WrongRequestURIException, InvocationTargetException, IllegalAccessException {
         TestRequestWrapper request = new TestRequestWrapper();
         TestSessionWrapper session = request.getSession();
         String requestURI = bundle.getString("put_mark");
         String requestURI_do = bundle.getString("do_put_mark");
-        RequestHandler handler = controllerFactory.getRequestHandler(requestURI);
 
         AdminService adminService = serviceFactory.getAdminService();
         CourseService courseService = serviceFactory.getCourseService();
@@ -62,17 +58,17 @@ public class ProfessorControllerTest {
                     // put mark OK
                     request.setParameter("student_id", item.getStudent().getId().toString());
                     request.setParameter("course_id", item.getCourse().getId().toString());
-                    String response = handler.handleRequest(request, requestURI);
+                    String response = controllerManager.manageRequest(request, requestURI);
                     Assert.assertTrue(response.equals("put_mark"));
 
                     // do put mark OK
                     request.setParameter("mark", item.getMark().toString());
-                    response = handler.handleRequest(request, requestURI_do);
+                    response = controllerManager.manageRequest(request, requestURI_do);
                     Assert.assertTrue(response.equals("/course_information?course_id=" + item.getCourse().getId()));
 
                     // do put mark error
                     request.setParameter("mark", "dfdf");
-                    response = handler.handleRequest(request, requestURI_do);
+                    response = controllerManager.manageRequest(request, requestURI_do);
                     String error = (String) request.getAttribute("error");
                     Assert.assertTrue(response.equals("/put_mark"));
                     Assert.assertNotNull(error);

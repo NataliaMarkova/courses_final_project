@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 /**
  * Created by natalia_markova on 19.07.2016.
  */
-public class ProfessorController implements RequestHandler {
+public class ProfessorController implements Controller {
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("resource.requestURI");
     private static final Logger logger = Logger.getLogger(ProfessorController.class);
@@ -29,28 +29,13 @@ public class ProfessorController implements RequestHandler {
     }
 
     /**
-     * @throws WrongRequestURIException
-     * {@inheritDoc}
-     */
-    @Override
-    public String handleRequest(RequestWrapper request, String requestURI) throws WrongRequestURIException {
-        if (requestURI.equals(bundle.getString("put_mark"))) {
-            return putMark(request);
-        } else if (requestURI.equals(bundle.getString("do_put_mark"))) {
-            return doPutMark(request);
-        } else {
-            logger.error("Wrong request URI: " + requestURI);
-            throw new WrongRequestURIException();
-        }
-    }
-
-    /**
      *  Gets information from the request (student_id and course_id), finds appropriate Archive item object in database and puts in it request.
      *  Returns name of the Archive item's edit page or URI to the start page if user doesn't have rights to put marks
      *  @param request
      *  @return name of the Archive item's edit page or URI to the start page
      */
-    private String putMark(RequestWrapper request) {
+    @RequestHandler(value = "/put_mark")
+    public String putMark(RequestWrapper request) {
         logger.debug("putMark()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
@@ -81,7 +66,8 @@ public class ProfessorController implements RequestHandler {
      *  @param request
      *  @return name of the Course' information page or name of the Archive item's edit page or URI to the start page
      */
-    private String doPutMark(RequestWrapper request) {
+    @RequestHandler(value = "/do_put_mark")
+    public String doPutMark(RequestWrapper request) {
         logger.debug("doPutMark()");
         Long studentId = Long.valueOf(request.getParameter("student_id"));
         Long courseId = Long.valueOf(request.getParameter("course_id"));

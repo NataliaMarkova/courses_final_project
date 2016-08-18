@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 /**
  * Created by natalia_markova on 18.07.2016.
  */
-public class StudentController implements RequestHandler {
+public class StudentController implements Controller {
 
     private static final Logger logger = Logger.getLogger(StudentController.class);
     private static final ResourceBundle bundle = ResourceBundle.getBundle("resource.requestURI");
@@ -28,29 +28,12 @@ public class StudentController implements RequestHandler {
     }
 
     /**
-     * @throws WrongRequestURIException
-     * {@inheritDoc}
-     */
-    @Override
-    public String handleRequest(RequestWrapper request, String requestURI) throws WrongRequestURIException {
-        if (requestURI.equals(bundle.getString("archive"))) {
-            return viewArchive(request);
-        } else if (requestURI.equals(bundle.getString("available_courses"))) {
-            return viewAvailableCourses(request);
-        } else if (requestURI.equals(bundle.getString("enroll_on_course"))) {
-            return enrollOnCourse(request);
-        } else {
-            logger.error("Wrong request URI: " + requestURI);
-            throw new WrongRequestURIException();
-        }
-    }
-
-    /**
      * Gets list of archive items from the database and puts it in the request
      * @param request
      * @return name of Archive's jsp-page
      */
-    private String viewArchive(RequestWrapper request) {
+    @RequestHandler(value = "/archive")
+    public String viewArchive(RequestWrapper request) {
         logger.debug("viewArchive()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
@@ -63,7 +46,8 @@ public class StudentController implements RequestHandler {
      * @param request
      * @return name of the Available courses' jsp-page
      */
-    private String viewAvailableCourses(RequestWrapper request) {
+    @RequestHandler(value = "/available_courses")
+    public String viewAvailableCourses(RequestWrapper request) {
         logger.debug("viewAvailableCourses()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
@@ -78,7 +62,8 @@ public class StudentController implements RequestHandler {
      * @param request
      * @return name of of the start page or URI to available courses
      */
-    private String enrollOnCourse(RequestWrapper request) {
+    @RequestHandler(value = "/enroll_on_course")
+    public String enrollOnCourse(RequestWrapper request) {
         logger.debug("enrollOnCourse()");
         SessionWrapper session = request.getSession(true);
         User user = (User) session.getAttribute("user");
